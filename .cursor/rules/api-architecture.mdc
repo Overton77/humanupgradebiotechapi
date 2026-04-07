@@ -1,0 +1,61 @@
+---
+description: API architecture, schema structure, and data flow conventions
+globs: humanupgradeapi/**/*.ts, humanupgradeapi/**/schema.prisma, humanupgradeapi/**/*.graphql
+alwaysApply: false
+---
+
+# API Architecture
+
+Stack: Express 5 + Apollo Server v5 + Prisma 7 (PrismaPg) + Zod 4 + Postgres
+
+## Key files
+
+- `prisma/schema.prisma` -- single source of truth for data models
+- `src/schema/typeDefs.ts` -- GraphQL SDL (plain string, not graphql-tag)
+- `src/graphql/schema.graphql` -- extracted SDL for Apollo MCP Server
+- `src/schema/resolvers/` -- query.ts, mutation.ts, per-entity field resolvers
+- `src/validation/` -- Zod schemas per entity (create + update inputs)
+- `src/loaders/` -- request-scoped DataLoaders (factory in index.ts)
+- `src/lib/prisma.ts` -- PrismaClient singleton with PrismaPg adapter
+- `src/lib/context.ts` -- Apollo context factory (prisma + loaders)
+- `src/server.ts` -- Express entrypoint, `export default app` for Vercel
+
+## Data flow
+
+```
+GraphQL request
+  -> Apollo Server
+  -> Resolver (query.ts or mutation.ts)
+  -> Zod validation (for mutations)
+  -> Prisma query (via context.prisma)
+  -> Field resolvers use DataLoaders (via context.loaders)
+  -> Response
+```
+
+## Schema change checklist
+
+When adding/changing a model or field:
+
+1. Edit `prisma/schema.prisma`
+2. Run `npx prisma generate` then `npx prisma db push`
+3. Update `src/schema/typeDefs.ts` (GraphQL types + inputs)
+4. Update `src/graphql/schema.graphql` to match
+5. Add/update Zod schema in `src/validation/<entity>.ts`
+6. Add/update resolvers in `src/schema/resolvers/`
+7. Add/update DataLoaders if new relations added
+8. Add/update `.graphql` operation files in `src/graphql/operations/`
+
+## Mutation conventions
+
+- Create: `createX(data: XCreateInput!): X!`
+- Update: `updateX(where: WhereUniqueInput!, data: XUpdateInput!): X!` (id-based for Claim/Media)
+- Delete: `deleteX(where: WhereUniqueInput!): X!` (id-based for Claim/Media)
+- Nullable fields use `StringNullableOperationInput { set, clear }`
+- String arrays use `StringListOperationInput { set, add, remove }`
+- Relations use `ToManyRelationOperationInput { set, connect, disconnect }`
+
+## Future directions
+
+- **Advanced search**: Full-text search across episodes, claims, persons. Will add `search` query with filters, pagination cursors, and relevance scoring.
+- **User API**: Authentication model (User, Session), API key management, role-based access control. Will add auth middleware to Express before Apollo.
+- Keep these in mind when structuring new code -- avoid patterns that would conflict with adding auth headers or search indexes later.
