@@ -1,0 +1,9 @@
+mutation UpdateLabTest($where: WhereUniqueInput!, $data: LabTestUpdateInput!) {
+  updateLabTest(where: $where, data: $data) {
+    id
+    slug
+    name
+    labName
+    tags
+  }
+}

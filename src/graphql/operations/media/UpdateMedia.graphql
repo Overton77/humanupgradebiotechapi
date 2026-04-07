@@ -1,0 +1,9 @@
+mutation UpdateMedia($id: ID!, $data: MediaUpdateInput!) {
+  updateMedia(id: $id, data: $data) {
+    id
+    url
+    type
+    title
+    sortOrder
+  }
+}

@@ -1,0 +1,9 @@
+mutation CreateBiomarker($data: BiomarkerCreateInput!) {
+  createBiomarker(data: $data) {
+    id
+    slug
+    name
+    unit
+    category
+  }
+}

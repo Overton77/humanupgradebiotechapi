@@ -1,0 +1,15 @@
+query GetEpisodes($podcastId: ID, $limit: Int, $offset: Int) {
+  episodes(podcastId: $podcastId, limit: $limit, offset: $offset) {
+    id
+    slug
+    podcastId
+    title
+    episodeNumber
+    channelName
+    publishedAt
+    isPublished
+    publishStatus
+    topicPrimary
+    tags
+  }
+}

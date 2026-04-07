@@ -1,0 +1,7 @@
+mutation DeleteMedia($id: ID!) {
+  deleteMedia(id: $id) {
+    id
+    url
+    type
+  }
+}

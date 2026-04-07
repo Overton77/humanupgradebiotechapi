@@ -1,0 +1,10 @@
+query GetLabTests($limit: Int, $offset: Int) {
+  labTests(limit: $limit, offset: $offset) {
+    id
+    slug
+    name
+    labName
+    testedAt
+    tags
+  }
+}

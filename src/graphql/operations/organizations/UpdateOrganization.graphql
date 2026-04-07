@@ -1,0 +1,11 @@
+mutation UpdateOrganization($where: WhereUniqueInput!, $data: OrganizationUpdateInput!) {
+  updateOrganization(where: $where, data: $data) {
+    id
+    slug
+    name
+    organizationType
+    tags
+    aliases
+    domains
+  }
+}

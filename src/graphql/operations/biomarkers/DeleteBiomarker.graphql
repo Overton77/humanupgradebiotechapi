@@ -1,0 +1,7 @@
+mutation DeleteBiomarker($where: WhereUniqueInput!) {
+  deleteBiomarker(where: $where) {
+    id
+    slug
+    name
+  }
+}

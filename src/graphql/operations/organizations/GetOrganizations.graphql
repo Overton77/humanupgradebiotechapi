@@ -1,0 +1,9 @@
+query GetOrganizations($limit: Int, $offset: Int) {
+  organizations(limit: $limit, offset: $offset) {
+    id
+    slug
+    name
+    organizationType
+    tags
+  }
+}

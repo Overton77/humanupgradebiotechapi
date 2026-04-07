@@ -1,0 +1,8 @@
+mutation CreateLabTest($data: LabTestCreateInput!) {
+  createLabTest(data: $data) {
+    id
+    slug
+    name
+    labName
+  }
+}

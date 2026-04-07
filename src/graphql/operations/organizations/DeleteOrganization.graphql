@@ -1,0 +1,7 @@
+mutation DeleteOrganization($where: WhereUniqueInput!) {
+  deleteOrganization(where: $where) {
+    id
+    slug
+    name
+  }
+}

@@ -1,0 +1,12 @@
+mutation UpdateProduct($where: WhereUniqueInput!, $data: ProductUpdateInput!) {
+  updateProduct(where: $where, data: $data) {
+    id
+    slug
+    name
+    category
+    isActive
+    tags
+    categories
+    benefits
+  }
+}

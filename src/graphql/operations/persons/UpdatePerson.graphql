@@ -1,0 +1,12 @@
+mutation UpdatePerson($where: WhereUniqueInput!, $data: PersonUpdateInput!) {
+  updatePerson(where: $where, data: $data) {
+    id
+    slug
+    fullName
+    firstName
+    lastName
+    title
+    aliases
+    expertiseAreas
+  }
+}

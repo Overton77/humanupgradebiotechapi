@@ -1,0 +1,10 @@
+mutation UpdateCompound($where: WhereUniqueInput!, $data: CompoundUpdateInput!) {
+  updateCompound(where: $where, data: $data) {
+    id
+    slug
+    name
+    canonicalName
+    aliases
+    mechanisms
+  }
+}

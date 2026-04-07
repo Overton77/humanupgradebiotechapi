@@ -1,0 +1,7 @@
+mutation DeletePodcast($where: WhereUniqueInput!) {
+  deletePodcast(where: $where) {
+    id
+    slug
+    title
+  }
+}

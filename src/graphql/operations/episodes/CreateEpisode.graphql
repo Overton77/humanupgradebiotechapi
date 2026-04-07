@@ -1,0 +1,11 @@
+mutation CreateEpisode($data: EpisodeCreateInput!) {
+  createEpisode(data: $data) {
+    id
+    slug
+    title
+    episodeNumber
+    channelName
+    publishedAt
+    isPublished
+  }
+}

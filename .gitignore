@@ -4,4 +4,4 @@ generated/
 .env
 .vercel/
 *.tsbuildinfo
-.vercel
+.apollo/mcp-server.log/

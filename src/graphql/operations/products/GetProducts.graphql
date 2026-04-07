@@ -1,0 +1,10 @@
+query GetProducts($organizationId: ID, $limit: Int, $offset: Int) {
+  products(organizationId: $organizationId, limit: $limit, offset: $offset) {
+    id
+    slug
+    name
+    category
+    isActive
+    tags
+  }
+}

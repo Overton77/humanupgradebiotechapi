@@ -1,0 +1,11 @@
+mutation CreateClaim($data: ClaimCreateInput!) {
+  createClaim(data: $data) {
+    id
+    episodeId
+    speakerId
+    text
+    claimType
+    stance
+    claimConfidence
+  }
+}

@@ -1,0 +1,11 @@
+query GetCaseStudies($limit: Int, $offset: Int) {
+  caseStudies(limit: $limit, offset: $offset) {
+    id
+    slug
+    title
+    studyType
+    doi
+    tags
+    keywords
+  }
+}

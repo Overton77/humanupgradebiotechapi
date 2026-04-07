@@ -1,0 +1,7 @@
+mutation DeleteProduct($where: WhereUniqueInput!) {
+  deleteProduct(where: $where) {
+    id
+    slug
+    name
+  }
+}

@@ -1,0 +1,11 @@
+mutation UpdateClaim($id: ID!, $data: ClaimUpdateInput!) {
+  updateClaim(id: $id, data: $data) {
+    id
+    text
+    claimType
+    stance
+    claimConfidence
+    tags
+    evidenceUrls
+  }
+}

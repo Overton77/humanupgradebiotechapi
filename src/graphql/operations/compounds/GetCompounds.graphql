@@ -1,0 +1,9 @@
+query GetCompounds($limit: Int, $offset: Int) {
+  compounds(limit: $limit, offset: $offset) {
+    id
+    slug
+    name
+    canonicalName
+    aliases
+  }
+}

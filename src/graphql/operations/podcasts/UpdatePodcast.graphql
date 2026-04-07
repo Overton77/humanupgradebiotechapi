@@ -1,0 +1,10 @@
+mutation UpdatePodcast($where: WhereUniqueInput!, $data: PodcastUpdateInput!) {
+  updatePodcast(where: $where, data: $data) {
+    id
+    slug
+    title
+    subtitle
+    isPublished
+    tags
+  }
+}

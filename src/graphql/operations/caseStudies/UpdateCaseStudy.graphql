@@ -1,0 +1,10 @@
+mutation UpdateCaseStudy($where: WhereUniqueInput!, $data: CaseStudyUpdateInput!) {
+  updateCaseStudy(where: $where, data: $data) {
+    id
+    slug
+    title
+    studyType
+    tags
+    keywords
+  }
+}

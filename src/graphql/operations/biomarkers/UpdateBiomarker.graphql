@@ -1,0 +1,11 @@
+mutation UpdateBiomarker($where: WhereUniqueInput!, $data: BiomarkerUpdateInput!) {
+  updateBiomarker(where: $where, data: $data) {
+    id
+    slug
+    name
+    unit
+    category
+    aliases
+    relatedSystems
+  }
+}

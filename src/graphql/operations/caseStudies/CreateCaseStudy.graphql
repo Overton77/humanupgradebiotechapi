@@ -1,0 +1,9 @@
+mutation CreateCaseStudy($data: CaseStudyCreateInput!) {
+  createCaseStudy(data: $data) {
+    id
+    slug
+    title
+    studyType
+    doi
+  }
+}

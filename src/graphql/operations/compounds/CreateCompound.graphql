@@ -1,0 +1,8 @@
+mutation CreateCompound($data: CompoundCreateInput!) {
+  createCompound(data: $data) {
+    id
+    slug
+    name
+    canonicalName
+  }
+}

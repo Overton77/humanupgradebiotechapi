@@ -1,0 +1,9 @@
+mutation CreatePodcast($data: PodcastCreateInput!) {
+  createPodcast(data: $data) {
+    id
+    slug
+    title
+    subtitle
+    isPublished
+  }
+}

@@ -1,0 +1,6 @@
+mutation DeleteClaim($id: ID!) {
+  deleteClaim(id: $id) {
+    id
+    text
+  }
+}

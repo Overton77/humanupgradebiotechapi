@@ -1,0 +1,10 @@
+query GetBiomarkers($limit: Int, $offset: Int) {
+  biomarkers(limit: $limit, offset: $offset) {
+    id
+    slug
+    name
+    unit
+    category
+    aliases
+  }
+}

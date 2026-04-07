@@ -1,0 +1,7 @@
+mutation DeleteCompound($where: WhereUniqueInput!) {
+  deleteCompound(where: $where) {
+    id
+    slug
+    name
+  }
+}
