@@ -4,10 +4,6 @@ import {
 } from "@aws-sdk/client-bedrock-runtime";
 import "dotenv/config";
 
-if (!process.env.AWS_BEARER_TOKEN_BEDROCK) {
-  throw new Error("Missing AWS_BEARER_TOKEN_BEDROCK");
-}
-
 export type EmbeddingModelId =
   | "amazon.titan-embed-text-v1"
   | "cohere.embed-v4:0"
@@ -44,7 +40,19 @@ export const SUPPORTED_EMBEDDING_MODEL_IDS = [
 ] as const;
 
 const region = process.env.AWS_REGION || "us-east-1";
-const client = new BedrockRuntimeClient({ region });
+let client: BedrockRuntimeClient | null = null;
+
+function getBedrockClient(): BedrockRuntimeClient {
+  if (!process.env.AWS_BEARER_TOKEN_BEDROCK) {
+    throw new Error("Missing AWS_BEARER_TOKEN_BEDROCK");
+  }
+
+  if (!client) {
+    client = new BedrockRuntimeClient({ region });
+  }
+
+  return client;
+}
 
 function assertNonEmptyText(text: string): string {
   const clean = text.trim();
@@ -128,7 +136,7 @@ export async function embedTextBedrock(
     body,
   });
 
-  const response = await client.send(command);
+  const response = await getBedrockClient().send(command);
   const payload = decodeJsonBody(response.body);
   const embedding = modelId.startsWith("cohere.embed-v4")
     ? extractCohereEmbedding(payload)
