@@ -1,9 +1,17 @@
-query GetPersons($limit: Int, $offset: Int) {
-  persons(limit: $limit, offset: $offset) {
-    id
-    slug
-    fullName
-    title
-    expertiseAreas
+query GetPersons($input: PersonSearchInput) {
+  persons(input: $input) {
+    total
+    items {
+      lexicalScore
+      semanticScore
+      hybridScore
+      person {
+        id
+        slug
+        fullName
+        title
+        expertiseAreas
+      }
+    }
   }
 }

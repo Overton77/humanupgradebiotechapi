@@ -1,4 +1,4 @@
-mutation DeletePerson($where: WhereUniqueInput!) {
+mutation DeletePerson($where: PersonWhereUniqueInput!) {
   deletePerson(where: $where) {
     id
     slug

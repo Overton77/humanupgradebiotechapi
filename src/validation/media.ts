@@ -1,5 +1,9 @@
 import { z } from 'zod'
-import { StringNullableOperationSchema, IntNullableOperationSchema } from './scalars.js'
+import {
+  StringNullableOperationSchema,
+  IntNullableOperationSchema,
+  createIdOnlyWhereUniqueInputSchema,
+} from './scalars.js'
 
 const MediaTypeEnum = z.enum(['IMAGE', 'VIDEO', 'AUDIO', 'DOCUMENT', 'LINK', 'OTHER'])
 
@@ -27,6 +31,9 @@ export const MediaCreateInputSchema = z.object({
   caseStudyId: z.string().optional(),
 })
 export type MediaCreateInput = z.infer<typeof MediaCreateInputSchema>
+
+export const MediaWhereUniqueInputSchema = createIdOnlyWhereUniqueInputSchema()
+export type MediaWhereUniqueInput = z.infer<typeof MediaWhereUniqueInputSchema>
 
 export const MediaUpdateInputSchema = z.object({
   url: z.string().url().optional(),

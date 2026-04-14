@@ -1,4 +1,4 @@
-mutation DeleteLabTest($where: WhereUniqueInput!) {
+mutation DeleteLabTest($where: LabTestWhereUniqueInput!) {
   deleteLabTest(where: $where) {
     id
     slug

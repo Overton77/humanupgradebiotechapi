@@ -1,5 +1,5 @@
-mutation CreatePodcast($data: PodcastCreateInput!) {
-  createPodcast(data: $data) {
+mutation CreatePodcast($data: PodcastCreateInput!, $embedding: EmbeddingWriteOptionsInput) {
+  createPodcast(data: $data, embedding: $embedding) {
     id
     slug
     title

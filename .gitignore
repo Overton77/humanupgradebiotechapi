@@ -4,4 +4,6 @@ generated/
 .env
 .vercel/
 *.tsbuildinfo
-.apollo/mcp-server.log/
+.apollo/mcp-server.log/ 
+
+**/test_run_scripts/** 

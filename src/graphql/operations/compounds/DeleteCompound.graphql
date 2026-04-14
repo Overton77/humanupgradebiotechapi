@@ -1,4 +1,4 @@
-mutation DeleteCompound($where: WhereUniqueInput!) {
+mutation DeleteCompound($where: CompoundWhereUniqueInput!) {
   deleteCompound(where: $where) {
     id
     slug

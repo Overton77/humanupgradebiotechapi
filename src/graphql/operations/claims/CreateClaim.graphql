@@ -1,5 +1,5 @@
-mutation CreateClaim($data: ClaimCreateInput!) {
-  createClaim(data: $data) {
+mutation CreateClaim($data: ClaimCreateInput!, $embedding: EmbeddingWriteOptionsInput) {
+  createClaim(data: $data, embedding: $embedding) {
     id
     episodeId
     speakerId

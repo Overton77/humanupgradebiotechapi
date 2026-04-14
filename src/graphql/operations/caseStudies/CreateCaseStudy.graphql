@@ -1,5 +1,5 @@
-mutation CreateCaseStudy($data: CaseStudyCreateInput!) {
-  createCaseStudy(data: $data) {
+mutation CreateCaseStudy($data: CaseStudyCreateInput!, $embedding: EmbeddingWriteOptionsInput) {
+  createCaseStudy(data: $data, embedding: $embedding) {
     id
     slug
     title

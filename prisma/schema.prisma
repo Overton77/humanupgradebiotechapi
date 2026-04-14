@@ -79,6 +79,13 @@ enum PublishStatus {
   READY
 }
 
+enum EmbeddingStatus {
+  MISSING
+  READY
+  STALE
+  ERROR
+}
+
 // ─── Models ──────────────────────────────────────────────────────────────────
 
 model Podcast {
@@ -94,6 +101,9 @@ model Podcast {
   isPublished Boolean  @default(false)
   tags        String[] @default([])
 
+  embedding    Unsupported("vector")?
+  searchVector Unsupported("tsvector")? @map("search_vector")
+
   episodes Episode[]
   media    Media[]
 
@@ -101,6 +111,7 @@ model Podcast {
   updatedAt DateTime @updatedAt
 
   @@index([title])
+  @@index([searchVector], type: Gin, map: "Podcast_search_vector_idx")
 }
 
 model Episode {
@@ -181,6 +192,9 @@ model Episode {
   claims               Claim[]
   media                Media[]
 
+  embedding    Unsupported("vector")?
+  searchVector Unsupported("tsvector")? @map("search_vector")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -191,6 +205,7 @@ model Episode {
   @@index([transcriptStatus])
   @@index([enrichmentStage1Status])
   @@index([publishStatus])
+  @@index([searchVector], type: Gin, map: "Episode_search_vector_idx")
 }
 
 model Claim {
@@ -215,6 +230,9 @@ model Claim {
 
   media Media[]
 
+  embedding    Unsupported("vector")?
+  searchVector Unsupported("tsvector")? @map("search_vector")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -222,6 +240,7 @@ model Claim {
   @@index([speakerId])
   @@index([claimType])
   @@index([stance])
+  @@index([searchVector], type: Gin, map: "Claim_search_vector_idx")
 }
 
 model Person {
@@ -247,10 +266,14 @@ model Person {
 
   media Media[]
 
+  embedding    Unsupported("vector")?
+  searchVector Unsupported("tsvector")? @map("search_vector")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([fullName])
+  @@index([searchVector], type: Gin, map: "Person_search_vector_idx")
 }
 
 model Organization {
@@ -282,11 +305,15 @@ model Organization {
 
   media Media[]
 
+  embedding    Unsupported("vector")?
+  searchVector Unsupported("tsvector")? @map("search_vector")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([name])
   @@index([organizationType])
+  @@index([searchVector], type: Gin, map: "Organization_search_vector_idx")
 }
 
 model Product {
@@ -313,6 +340,9 @@ model Product {
   labTests          LabTest[]
   media             Media[]
 
+  embedding    Unsupported("vector")?
+  searchVector Unsupported("tsvector")? @map("search_vector")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -320,6 +350,7 @@ model Product {
   @@index([organizationId])
   @@index([name])
   @@index([sku])
+  @@index([searchVector], type: Gin, map: "Product_search_vector_idx")
 }
 
 model Compound {
@@ -337,10 +368,14 @@ model Compound {
   biomarkers Biomarker[] @relation("CompoundBiomarkerAssociations")
   media      Media[]
 
+  embedding    Unsupported("vector")?
+  searchVector Unsupported("tsvector")? @map("search_vector")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([name])
+  @@index([searchVector], type: Gin, map: "Compound_search_vector_idx")
 }
 
 model LabTest {
@@ -364,6 +399,9 @@ model LabTest {
   testsBiomarkers Biomarker[] @relation("LabTestBiomarkers")
   media           Media[]
 
+  embedding    Unsupported("vector")?
+  searchVector Unsupported("tsvector")? @map("search_vector")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -371,6 +409,7 @@ model LabTest {
   @@index([organizationId])
   @@index([testedAt])
   @@index([name])
+  @@index([searchVector], type: Gin, map: "LabTest_search_vector_idx")
 }
 
 model Biomarker {
@@ -393,10 +432,14 @@ model Biomarker {
   compounds Compound[] @relation("CompoundBiomarkerAssociations")
   media     Media[]
 
+  embedding    Unsupported("vector")?
+  searchVector Unsupported("tsvector")? @map("search_vector")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([name])
+  @@index([searchVector], type: Gin, map: "Biomarker_search_vector_idx")
 }
 
 model CaseStudy {
@@ -420,12 +463,36 @@ model CaseStudy {
 
   media Media[]
 
+  embedding    Unsupported("vector")?
+  searchVector Unsupported("tsvector")? @map("search_vector")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([title])
   @@index([publicationDate])
   @@index([doi])
+  @@index([searchVector], type: Gin, map: "CaseStudy_search_vector_idx")
+}
+
+model EmbeddingState {
+  id               String          @id @default(cuid())
+  entityType       String
+  entityId         String
+  embeddingVersion Int
+  contentHash      String
+  sourcePayloadJson Json?
+  embeddingText    String?
+  embeddingModel   String?
+  embeddingStatus  EmbeddingStatus
+  embeddedAt       DateTime?
+  lastError        String?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  @@unique([entityType, entityId])
+  @@index([entityType, embeddingStatus])
+  @@index([entityType, embeddingVersion])
 }
 
 model Media {

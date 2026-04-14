@@ -1,4 +1,6 @@
 export * from './scalars.js'
+export * from './embeddingWrite.js'
+export * from './embeddingSource.js'
 export * from './podcast.js'
 export * from './episode.js'
 export * from './claim.js'

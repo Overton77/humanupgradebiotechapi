@@ -1,4 +1,4 @@
-mutation DeletePodcast($where: WhereUniqueInput!) {
+mutation DeletePodcast($where: PodcastWhereUniqueInput!) {
   deletePodcast(where: $where) {
     id
     slug

@@ -1,4 +1,4 @@
-mutation DeleteOrganization($where: WhereUniqueInput!) {
+mutation DeleteOrganization($where: OrganizationWhereUniqueInput!) {
   deleteOrganization(where: $where) {
     id
     slug

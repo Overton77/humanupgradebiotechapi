@@ -1,5 +1,5 @@
-mutation CreatePerson($data: PersonCreateInput!) {
-  createPerson(data: $data) {
+mutation CreatePerson($data: PersonCreateInput!, $embedding: EmbeddingWriteOptionsInput) {
+  createPerson(data: $data, embedding: $embedding) {
     id
     slug
     fullName

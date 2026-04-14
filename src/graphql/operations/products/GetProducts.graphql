@@ -1,10 +1,18 @@
-query GetProducts($organizationId: ID, $limit: Int, $offset: Int) {
-  products(organizationId: $organizationId, limit: $limit, offset: $offset) {
-    id
-    slug
-    name
-    category
-    isActive
-    tags
+query GetProducts($input: ProductSearchInput) {
+  products(input: $input) {
+    total
+    items {
+      lexicalScore
+      semanticScore
+      hybridScore
+      product {
+        id
+        slug
+        name
+        category
+        isActive
+        tags
+      }
+    }
   }
 }

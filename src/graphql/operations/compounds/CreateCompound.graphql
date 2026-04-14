@@ -1,5 +1,5 @@
-mutation CreateCompound($data: CompoundCreateInput!) {
-  createCompound(data: $data) {
+mutation CreateCompound($data: CompoundCreateInput!, $embedding: EmbeddingWriteOptionsInput) {
+  createCompound(data: $data, embedding: $embedding) {
     id
     slug
     name

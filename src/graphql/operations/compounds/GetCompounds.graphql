@@ -1,9 +1,17 @@
-query GetCompounds($limit: Int, $offset: Int) {
-  compounds(limit: $limit, offset: $offset) {
-    id
-    slug
-    name
-    canonicalName
-    aliases
+query GetCompounds($input: CompoundSearchInput) {
+  compounds(input: $input) {
+    total
+    items {
+      lexicalScore
+      semanticScore
+      hybridScore
+      compound {
+        id
+        slug
+        name
+        canonicalName
+        aliases
+      }
+    }
   }
 }

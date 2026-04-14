@@ -1,5 +1,5 @@
-mutation DeleteMedia($id: ID!) {
-  deleteMedia(id: $id) {
+mutation DeleteMedia($where: MediaWhereUniqueInput!) {
+  deleteMedia(where: $where) {
     id
     url
     type

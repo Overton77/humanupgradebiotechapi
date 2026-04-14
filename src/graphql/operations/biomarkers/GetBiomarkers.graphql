@@ -1,10 +1,18 @@
-query GetBiomarkers($limit: Int, $offset: Int) {
-  biomarkers(limit: $limit, offset: $offset) {
-    id
-    slug
-    name
-    unit
-    category
-    aliases
+query GetBiomarkers($input: BiomarkerSearchInput) {
+  biomarkers(input: $input) {
+    total
+    items {
+      lexicalScore
+      semanticScore
+      hybridScore
+      biomarker {
+        id
+        slug
+        name
+        unit
+        category
+        aliases
+      }
+    }
   }
 }

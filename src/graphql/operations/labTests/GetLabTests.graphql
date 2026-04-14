@@ -1,10 +1,18 @@
-query GetLabTests($limit: Int, $offset: Int) {
-  labTests(limit: $limit, offset: $offset) {
-    id
-    slug
-    name
-    labName
-    testedAt
-    tags
+query GetLabTests($input: LabTestSearchInput) {
+  labTests(input: $input) {
+    total
+    items {
+      lexicalScore
+      semanticScore
+      hybridScore
+      labTest {
+        id
+        slug
+        name
+        labName
+        testedAt
+        tags
+      }
+    }
   }
 }

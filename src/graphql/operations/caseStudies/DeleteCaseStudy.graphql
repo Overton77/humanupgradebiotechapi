@@ -1,4 +1,4 @@
-mutation DeleteCaseStudy($where: WhereUniqueInput!) {
+mutation DeleteCaseStudy($where: CaseStudyWhereUniqueInput!) {
   deleteCaseStudy(where: $where) {
     id
     slug

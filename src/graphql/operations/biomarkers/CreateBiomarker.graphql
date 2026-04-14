@@ -1,5 +1,5 @@
-mutation CreateBiomarker($data: BiomarkerCreateInput!) {
-  createBiomarker(data: $data) {
+mutation CreateBiomarker($data: BiomarkerCreateInput!, $embedding: EmbeddingWriteOptionsInput) {
+  createBiomarker(data: $data, embedding: $embedding) {
     id
     slug
     name

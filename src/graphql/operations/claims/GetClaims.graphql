@@ -1,12 +1,20 @@
-query GetClaims($episodeId: ID, $limit: Int, $offset: Int) {
-  claims(episodeId: $episodeId, limit: $limit, offset: $offset) {
-    id
-    episodeId
-    speakerId
-    text
-    claimType
-    stance
-    claimConfidence
-    tags
+query GetClaims($input: ClaimSearchInput) {
+  claims(input: $input) {
+    total
+    items {
+      lexicalScore
+      semanticScore
+      hybridScore
+      claim {
+        id
+        episodeId
+        speakerId
+        text
+        claimType
+        stance
+        claimConfidence
+        tags
+      }
+    }
   }
 }

@@ -1,5 +1,5 @@
-mutation UpdateEpisode($where: WhereUniqueInput!, $data: EpisodeUpdateInput!) {
-  updateEpisode(where: $where, data: $data) {
+mutation UpdateEpisode($where: EpisodeWhereUniqueInput!, $data: EpisodeUpdateInput!, $embedding: EmbeddingWriteOptionsInput) {
+  updateEpisode(where: $where, data: $data, embedding: $embedding) {
     id
     slug
     title

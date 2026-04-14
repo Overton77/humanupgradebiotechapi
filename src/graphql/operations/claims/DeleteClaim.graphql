@@ -1,5 +1,5 @@
-mutation DeleteClaim($id: ID!) {
-  deleteClaim(id: $id) {
+mutation DeleteClaim($where: ClaimWhereUniqueInput!) {
+  deleteClaim(where: $where) {
     id
     text
   }

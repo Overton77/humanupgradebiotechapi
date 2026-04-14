@@ -1,5 +1,5 @@
-mutation UpdateCompound($where: WhereUniqueInput!, $data: CompoundUpdateInput!) {
-  updateCompound(where: $where, data: $data) {
+mutation UpdateCompound($where: CompoundWhereUniqueInput!, $data: CompoundUpdateInput!, $embedding: EmbeddingWriteOptionsInput) {
+  updateCompound(where: $where, data: $data, embedding: $embedding) {
     id
     slug
     name

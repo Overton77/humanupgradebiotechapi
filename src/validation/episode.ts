@@ -4,15 +4,17 @@ import {
   IntNullableOperationSchema,
   DateTimeNullableOperationSchema,
   StringListOperationSchema,
-  ToManyRelationOperationSchema,
-  WhereUniqueInputSchema,
+  createIdSlugWhereUniqueInputSchema,
 } from './scalars.js'
+import { PersonToManyRelationUpdateInputSchema } from './person.js'
+import { OrganizationToManyRelationUpdateInputSchema } from './organization.js'
 
 const TranscriptStatusEnum = z.enum(['MISSING', 'QUEUED', 'STORED', 'ERROR'])
 const PipelineStatusEnum = z.enum(['NOT_STARTED', 'RUNNING', 'COMPLETE', 'ERROR'])
 const PublishStatusEnum = z.enum(['HIDDEN', 'READY'])
 
-export const EpisodeCreateInputSchema = z.object({
+export const EpisodeCreateInputSchema = z
+  .object({
   slug: z.string().min(1),
   podcastId: z.string().min(1),
   title: z.string().min(1),
@@ -60,10 +62,14 @@ export const EpisodeCreateInputSchema = z.object({
   topics: z.array(z.string()).optional(),
 
   webPageTimelines: z.any().optional(),
-})
+  })
 export type EpisodeCreateInput = z.infer<typeof EpisodeCreateInputSchema>
 
-export const EpisodeUpdateInputSchema = z.object({
+export const EpisodeWhereUniqueInputSchema = createIdSlugWhereUniqueInputSchema()
+export type EpisodeWhereUniqueInput = z.infer<typeof EpisodeWhereUniqueInputSchema>
+
+export const EpisodeUpdateInputSchema = z
+  .object({
   title: z.string().min(1).optional(),
   episodeNumber: IntNullableOperationSchema.optional(),
   seasonNumber: IntNullableOperationSchema.optional(),
@@ -110,7 +116,7 @@ export const EpisodeUpdateInputSchema = z.object({
 
   webPageTimelines: z.any().optional(),
 
-  guests: ToManyRelationOperationSchema.optional(),
-  sponsorOrganizations: ToManyRelationOperationSchema.optional(),
-})
+  guests: PersonToManyRelationUpdateInputSchema.optional(),
+  sponsorOrganizations: OrganizationToManyRelationUpdateInputSchema.optional(),
+  })
 export type EpisodeUpdateInput = z.infer<typeof EpisodeUpdateInputSchema>

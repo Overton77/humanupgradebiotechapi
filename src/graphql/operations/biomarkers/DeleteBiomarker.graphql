@@ -1,4 +1,4 @@
-mutation DeleteBiomarker($where: WhereUniqueInput!) {
+mutation DeleteBiomarker($where: BiomarkerWhereUniqueInput!) {
   deleteBiomarker(where: $where) {
     id
     slug

@@ -1,9 +1,17 @@
-query GetOrganizations($limit: Int, $offset: Int) {
-  organizations(limit: $limit, offset: $offset) {
-    id
-    slug
-    name
-    organizationType
-    tags
+query GetOrganizations($input: OrganizationSearchInput) {
+  organizations(input: $input) {
+    total
+    items {
+      lexicalScore
+      semanticScore
+      hybridScore
+      organization {
+        id
+        slug
+        name
+        organizationType
+        tags
+      }
+    }
   }
 }

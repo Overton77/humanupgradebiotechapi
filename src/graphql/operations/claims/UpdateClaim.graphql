@@ -1,5 +1,5 @@
-mutation UpdateClaim($id: ID!, $data: ClaimUpdateInput!) {
-  updateClaim(id: $id, data: $data) {
+mutation UpdateClaim($where: ClaimWhereUniqueInput!, $data: ClaimUpdateInput!, $embedding: EmbeddingWriteOptionsInput) {
+  updateClaim(where: $where, data: $data, embedding: $embedding) {
     id
     text
     claimType

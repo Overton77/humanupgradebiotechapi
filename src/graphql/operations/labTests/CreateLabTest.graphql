@@ -1,5 +1,5 @@
-mutation CreateLabTest($data: LabTestCreateInput!) {
-  createLabTest(data: $data) {
+mutation CreateLabTest($data: LabTestCreateInput!, $embedding: EmbeddingWriteOptionsInput) {
+  createLabTest(data: $data, embedding: $embedding) {
     id
     slug
     name

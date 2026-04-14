@@ -1,11 +1,19 @@
-query GetCaseStudies($limit: Int, $offset: Int) {
-  caseStudies(limit: $limit, offset: $offset) {
-    id
-    slug
-    title
-    studyType
-    doi
-    tags
-    keywords
+query GetCaseStudies($input: CaseStudySearchInput) {
+  caseStudies(input: $input) {
+    total
+    items {
+      lexicalScore
+      semanticScore
+      hybridScore
+      caseStudy {
+        id
+        slug
+        title
+        studyType
+        doi
+        tags
+        keywords
+      }
+    }
   }
 }

@@ -1,5 +1,5 @@
-mutation UpdateMedia($id: ID!, $data: MediaUpdateInput!) {
-  updateMedia(id: $id, data: $data) {
+mutation UpdateMedia($where: MediaWhereUniqueInput!, $data: MediaUpdateInput!) {
+  updateMedia(where: $where, data: $data) {
     id
     url
     type
