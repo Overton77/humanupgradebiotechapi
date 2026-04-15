@@ -6,4 +6,12 @@ generated/
 *.tsbuildinfo
 .apollo/mcp-server.log/ 
 
-**/test_run_scripts/** 
+**/test_run_scripts/**  
+
+
+src/scripts/migrateEpisodes.ts   
+src/scripts/analyzeEpisodeClaimSpeakers.ts  
+
+src/scripts/output/ 
+
+
