@@ -17,10 +17,15 @@ enum ClaimType {
   FACTUAL
   CAUSAL
   MECHANISTIC
+  MECHANISM_BIOLOGICAL
   STATISTICAL
   ANECDOTAL
   RECOMMENDATION
+  CLINICAL_APPLICATION
   SAFETY_RISK
+  INTERVENTION_PROTOCOL
+  INTERVENTION_TECHNOLOGY
+  PRODUCT_CLAIM
   OTHER
 }
 
@@ -30,6 +35,8 @@ enum ClaimStance {
   ASSERTED
   NEUTRAL
   MIXED
+  SUGGESTED
+  ANECDOTAL
   UNKNOWN
 }
 
@@ -176,6 +183,7 @@ type Claim {
   speakerId: String
   speaker: Person
   text: String!
+  probableSpeaker: String
   evidenceExcerpt: String
   claimType: ClaimType!
   stance: ClaimStance!
@@ -380,6 +388,7 @@ input PodcastWhereUniqueInput {
 input EpisodeWhereUniqueInput {
   id: ID
   slug: String
+  episodePageUrl: String
 }
 
 input ClaimWhereUniqueInput {
@@ -422,6 +431,10 @@ input CaseStudyWhereUniqueInput {
 }
 
 input MediaWhereUniqueInput {
+  id: ID!
+}
+
+input MediaConnectOrCreateWhereInput {
   id: ID!
 }
 
@@ -501,6 +514,11 @@ input BiomarkerConnectOrCreateInput {
   create: BiomarkerCreateInput!
 }
 
+input MediaConnectOrCreateInput {
+  where: MediaConnectOrCreateWhereInput!
+  create: MediaCreateInput!
+}
+
 input EmbeddingWriteOptionsInput {
   mode: EmbeddingWriteMode = AUTO
 }
@@ -556,6 +574,14 @@ input BiomarkerToManyRelationUpdateInput {
   disconnect: [BiomarkerWhereUniqueInput!]
   create: [BiomarkerCreateInput!]
   connectOrCreate: [BiomarkerConnectOrCreateInput!]
+}
+
+input MediaToManyRelationUpdateInput {
+  set: [MediaWhereUniqueInput!]
+  connect: [MediaWhereUniqueInput!]
+  disconnect: [MediaWhereUniqueInput!]
+  create: [MediaCreateInput!]
+  connectOrCreate: [MediaConnectOrCreateInput!]
 }
 
 # ─── Create Inputs ─────────────────────────────────────────────────────────
@@ -767,6 +793,7 @@ input PodcastUpdateInput {
   language: StringNullableOperationInput
   isPublished: Boolean
   tags: StringListOperationInput
+  media: MediaToManyRelationUpdateInput
 }
 
 input EpisodeUpdateInput {
@@ -808,6 +835,7 @@ input EpisodeUpdateInput {
   webPageTimelines: JSON
   guests: PersonToManyRelationUpdateInput
   sponsorOrganizations: OrganizationToManyRelationUpdateInput
+  media: MediaToManyRelationUpdateInput
 }
 
 input ClaimUpdateInput {
@@ -822,6 +850,7 @@ input ClaimUpdateInput {
   tags: StringListOperationInput
   evidenceUrls: StringListOperationInput
   speaker: PersonToOneRelationUpdateInput
+  media: MediaToManyRelationUpdateInput
 }
 
 input PersonUpdateInput {
@@ -835,6 +864,7 @@ input PersonUpdateInput {
   xUrl: StringNullableOperationInput
   aliases: StringListOperationInput
   expertiseAreas: StringListOperationInput
+  media: MediaToManyRelationUpdateInput
 }
 
 input OrganizationUpdateInput {
@@ -853,6 +883,7 @@ input OrganizationUpdateInput {
   domains: StringListOperationInput
   owners: PersonToManyRelationUpdateInput
   executives: PersonToManyRelationUpdateInput
+  media: MediaToManyRelationUpdateInput
 }
 
 input ProductUpdateInput {
@@ -871,6 +902,7 @@ input ProductUpdateInput {
   benefits: StringListOperationInput
   organization: OrganizationToOneRelationUpdateInput
   containsCompounds: CompoundToManyRelationUpdateInput
+  media: MediaToManyRelationUpdateInput
 }
 
 input CompoundUpdateInput {
@@ -880,6 +912,7 @@ input CompoundUpdateInput {
   externalRef: StringNullableOperationInput
   aliases: StringListOperationInput
   mechanisms: StringListOperationInput
+  media: MediaToManyRelationUpdateInput
 }
 
 input LabTestUpdateInput {
@@ -893,6 +926,7 @@ input LabTestUpdateInput {
   product: ProductToOneRelationUpdateInput
   organization: OrganizationToOneRelationUpdateInput
   testsBiomarkers: BiomarkerToManyRelationUpdateInput
+  media: MediaToManyRelationUpdateInput
 }
 
 input BiomarkerUpdateInput {
@@ -907,6 +941,7 @@ input BiomarkerUpdateInput {
   referenceRangeMax: FloatNullableOperationInput
   aliases: StringListOperationInput
   relatedSystems: StringListOperationInput
+  media: MediaToManyRelationUpdateInput
 }
 
 input CaseStudyUpdateInput {
@@ -923,6 +958,7 @@ input CaseStudyUpdateInput {
   keywords: StringListOperationInput
   businessSponsors: OrganizationToManyRelationUpdateInput
   referencedByOrganizations: OrganizationToManyRelationUpdateInput
+  media: MediaToManyRelationUpdateInput
 }
 
 input MediaUpdateInput {
@@ -942,6 +978,8 @@ input MediaUpdateInput {
 # ─── Queries ────────────────────────────────────────────────────────────────
 
 # ─── Search Queries ──────────────────────────────────────────────────────────
+# On all *SearchInput types: omit `limit` for the default page size (20).
+# Pass `limit: null` to return every matching row (after `offset`). `offset` may be 0.
 
 enum SearchMode {
   NONE
@@ -1174,7 +1212,7 @@ type Query {
   podcast(id: ID, slug: String): Podcast
   podcasts(input: PodcastSearchInput): PodcastSearchResult!
 
-  episode(id: ID, slug: String): Episode
+  episode(id: ID, slug: String, episodePageUrl: String): Episode
   episodes(input: EpisodeSearchInput): EpisodeSearchResult!
 
   claim(id: ID): Claim

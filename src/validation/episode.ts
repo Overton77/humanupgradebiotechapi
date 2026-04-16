@@ -4,10 +4,11 @@ import {
   IntNullableOperationSchema,
   DateTimeNullableOperationSchema,
   StringListOperationSchema,
-  createIdSlugWhereUniqueInputSchema,
+  createEpisodeWhereUniqueInputSchema,
 } from './scalars.js'
 import { PersonToManyRelationUpdateInputSchema } from './person.js'
 import { OrganizationToManyRelationUpdateInputSchema } from './organization.js'
+import { MediaToManyRelationUpdateInputSchema } from './media.js'
 
 const TranscriptStatusEnum = z.enum(['MISSING', 'QUEUED', 'STORED', 'ERROR'])
 const PipelineStatusEnum = z.enum(['NOT_STARTED', 'RUNNING', 'COMPLETE', 'ERROR'])
@@ -65,7 +66,7 @@ export const EpisodeCreateInputSchema = z
   })
 export type EpisodeCreateInput = z.infer<typeof EpisodeCreateInputSchema>
 
-export const EpisodeWhereUniqueInputSchema = createIdSlugWhereUniqueInputSchema()
+export const EpisodeWhereUniqueInputSchema = createEpisodeWhereUniqueInputSchema()
 export type EpisodeWhereUniqueInput = z.infer<typeof EpisodeWhereUniqueInputSchema>
 
 export const EpisodeUpdateInputSchema = z
@@ -118,5 +119,6 @@ export const EpisodeUpdateInputSchema = z
 
   guests: PersonToManyRelationUpdateInputSchema.optional(),
   sponsorOrganizations: OrganizationToManyRelationUpdateInputSchema.optional(),
+  media: MediaToManyRelationUpdateInputSchema.optional(),
   })
 export type EpisodeUpdateInput = z.infer<typeof EpisodeUpdateInputSchema>

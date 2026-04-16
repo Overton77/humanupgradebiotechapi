@@ -46,7 +46,8 @@ export type NormalizedSearchInput<T extends BaseSearchInput> = Omit<
 > & {
   mode: SearchMode
   query: string | null
-  limit: number
+  /** `null` means no cap (return all rows after offset). Omitted/`undefined` becomes the default page size. */
+  limit: number | null
   offset: number
 }
 

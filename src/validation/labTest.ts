@@ -8,6 +8,7 @@ import {
 import { ProductToOneRelationUpdateInputSchema } from './product.js'
 import { OrganizationToOneRelationUpdateInputSchema } from './organization.js'
 import { BiomarkerToManyRelationUpdateInputSchema } from './biomarker.js'
+import { MediaToManyRelationUpdateInputSchema } from './media.js'
 
 export const LabTestCreateInputSchema = z
   .object({
@@ -39,5 +40,6 @@ export const LabTestUpdateInputSchema = z
     product: ProductToOneRelationUpdateInputSchema.optional(),
     organization: OrganizationToOneRelationUpdateInputSchema.optional(),
     testsBiomarkers: BiomarkerToManyRelationUpdateInputSchema.optional(),
+    media: MediaToManyRelationUpdateInputSchema.optional(),
   })
 export type LabTestUpdateInput = z.infer<typeof LabTestUpdateInputSchema>

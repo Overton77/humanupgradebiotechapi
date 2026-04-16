@@ -8,6 +8,7 @@ import {
   buildToOneRelationUpdateSchema,
   buildToManyRelationUpdateSchema,
 } from './scalars.js'
+import { MediaToManyRelationUpdateInputSchema } from './media.js'
 
 export const PersonCreateInputSchema = z
   .object({
@@ -63,5 +64,6 @@ export const PersonUpdateInputSchema = z
     xUrl: StringNullableOperationSchema.optional(),
     aliases: StringListOperationSchema.optional(),
     expertiseAreas: StringListOperationSchema.optional(),
+    media: MediaToManyRelationUpdateInputSchema.optional(),
   })
 export type PersonUpdateInput = z.infer<typeof PersonUpdateInputSchema>

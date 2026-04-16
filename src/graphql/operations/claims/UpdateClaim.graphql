@@ -1,9 +1,14 @@
-mutation UpdateClaim($where: ClaimWhereUniqueInput!, $data: ClaimUpdateInput!, $embedding: EmbeddingWriteOptionsInput) {
+mutation UpdateClaim(
+  $where: ClaimWhereUniqueInput!
+  $data: ClaimUpdateInput!
+  $embedding: EmbeddingWriteOptionsInput
+) {
   updateClaim(where: $where, data: $data, embedding: $embedding) {
     id
     text
     claimType
     stance
+    probableSpeaker
     claimConfidence
     tags
     evidenceUrls

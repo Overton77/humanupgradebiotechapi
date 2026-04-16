@@ -7,6 +7,7 @@ import {
   buildConnectOrCreateInputSchema,
   buildToManyRelationUpdateSchema,
 } from './scalars.js'
+import { MediaToManyRelationUpdateInputSchema } from './media.js'
 
 export const CompoundCreateInputSchema = z
   .object({
@@ -47,5 +48,6 @@ export const CompoundUpdateInputSchema = z
     externalRef: StringNullableOperationSchema.optional(),
     aliases: StringListOperationSchema.optional(),
     mechanisms: StringListOperationSchema.optional(),
+    media: MediaToManyRelationUpdateInputSchema.optional(),
   })
 export type CompoundUpdateInput = z.infer<typeof CompoundUpdateInputSchema>

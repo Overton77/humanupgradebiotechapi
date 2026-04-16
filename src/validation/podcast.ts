@@ -4,6 +4,7 @@ import {
   StringListOperationSchema,
   createIdSlugWhereUniqueInputSchema,
 } from './scalars.js'
+import { MediaToManyRelationUpdateInputSchema } from './media.js'
 
 export const PodcastCreateInputSchema = z
   .object({
@@ -34,5 +35,6 @@ export const PodcastUpdateInputSchema = z
     language: StringNullableOperationSchema.optional(),
     isPublished: z.boolean().optional(),
     tags: StringListOperationSchema.optional(),
+    media: MediaToManyRelationUpdateInputSchema.optional(),
   })
 export type PodcastUpdateInput = z.infer<typeof PodcastUpdateInputSchema>

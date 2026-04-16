@@ -109,6 +109,12 @@ export const createIdSlugWhereUniqueInputSchema = () => z.object({
   slug: z.string().min(1).optional(),
 }).check(createExactlyOneSelectorCheck(['id', 'slug']))
 
+export const createEpisodeWhereUniqueInputSchema = () => z.object({
+  id: z.string().min(1).optional(),
+  slug: z.string().min(1).optional(),
+  episodePageUrl: z.string().min(1).optional(),
+}).check(createExactlyOneSelectorCheck(['id', 'slug', 'episodePageUrl']))
+
 export const createIdOnlyWhereUniqueInputSchema = () => z.object({
   id: z.string().min(1),
 })

@@ -34,7 +34,7 @@ import {
   type PodcastSearchInput,
   type ProductSearchInput,
 } from "../../search/entitySearchService.js";
-import { resolveWhere } from "./helpers.js";
+import { resolveEpisodeWhereUnique, resolveWhere } from "./helpers.js";
 
 /** Root `Query` field parent is always `null` in GraphQL execution. */
 type QueryRoot = null;
@@ -60,11 +60,11 @@ export const queryResolvers = {
 
     episode: async (
       _parent: QueryRoot,
-      args: { id?: string; slug?: string },
+      args: { id?: string; slug?: string; episodePageUrl?: string },
       ctx: GraphQLContext,
     ): Promise<Episode | null> => {
       const episode = await ctx.prisma.episode.findUnique({
-        where: resolveWhere(args),
+        where: resolveEpisodeWhereUnique(args),
       });
       return episode;
     },

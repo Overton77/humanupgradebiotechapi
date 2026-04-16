@@ -5,7 +5,8 @@ query GetClaim($id: ID) {
     speakerId
     text
     evidenceExcerpt
-    claimType
+    claimType  
+    probableSpeaker
     stance
     claimConfidence
     startTimeSeconds

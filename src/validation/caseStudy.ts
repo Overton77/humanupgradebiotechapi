@@ -6,6 +6,7 @@ import {
   createIdSlugWhereUniqueInputSchema,
 } from './scalars.js'
 import { OrganizationToManyRelationUpdateInputSchema } from './organization.js'
+import { MediaToManyRelationUpdateInputSchema } from './media.js'
 
 export const CaseStudyCreateInputSchema = z
   .object({
@@ -42,5 +43,6 @@ export const CaseStudyUpdateInputSchema = z
     keywords: StringListOperationSchema.optional(),
     businessSponsors: OrganizationToManyRelationUpdateInputSchema.optional(),
     referencedByOrganizations: OrganizationToManyRelationUpdateInputSchema.optional(),
+    media: MediaToManyRelationUpdateInputSchema.optional(),
   })
 export type CaseStudyUpdateInput = z.infer<typeof CaseStudyUpdateInputSchema>

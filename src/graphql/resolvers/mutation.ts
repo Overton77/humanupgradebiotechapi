@@ -34,7 +34,7 @@ import {
   updatePodcast,
   updateProduct,
 } from "../../services/searchableEntityWriteService.js";
-import { resolveWhere, applyNullableOp } from "./helpers.js";
+import { resolveEpisodeWhereUnique, resolveWhere, applyNullableOp } from "./helpers.js";
 import type {
   CreateBiomarkerMutationArgs,
   CreateCaseStudyMutationArgs,
@@ -142,7 +142,7 @@ export const mutationResolvers = {
       ctx: GraphQLContext,
     ): Promise<Episode> => {
       const existing = await ctx.prisma.episode.findUniqueOrThrow({
-        where: resolveWhere(where),
+        where: resolveEpisodeWhereUnique(where),
       });
       const deleted = await ctx.prisma.episode.delete({
         where: { id: existing.id },

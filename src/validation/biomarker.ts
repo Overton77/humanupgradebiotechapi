@@ -9,6 +9,7 @@ import {
   buildConnectOrCreateInputSchema,
   buildToManyRelationUpdateSchema,
 } from './scalars.js'
+import { MediaToManyRelationUpdateInputSchema } from './media.js'
 
 export const BiomarkerCreateInputSchema = z
   .object({
@@ -59,5 +60,6 @@ export const BiomarkerUpdateInputSchema = z
     referenceRangeMax: FloatNullableOperationSchema.optional(),
     aliases: StringListOperationSchema.optional(),
     relatedSystems: StringListOperationSchema.optional(),
+    media: MediaToManyRelationUpdateInputSchema.optional(),
   })
 export type BiomarkerUpdateInput = z.infer<typeof BiomarkerUpdateInputSchema>

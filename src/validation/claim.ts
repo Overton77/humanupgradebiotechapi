@@ -6,18 +6,40 @@ import {
   createIdOnlyWhereUniqueInputSchema,
 } from './scalars.js'
 import { PersonToOneRelationUpdateInputSchema } from './person.js'
+import { MediaToManyRelationUpdateInputSchema } from './media.js'
 
 const ClaimTypeEnum = z.enum([
-  'FACTUAL', 'CAUSAL', 'MECHANISTIC', 'STATISTICAL',
-  'ANECDOTAL', 'RECOMMENDATION', 'SAFETY_RISK', 'OTHER',
+  'FACTUAL',
+  'CAUSAL',
+  'MECHANISTIC',
+  'MECHANISM_BIOLOGICAL',
+  'STATISTICAL',
+  'ANECDOTAL',
+  'RECOMMENDATION',
+  'CLINICAL_APPLICATION',
+  'SAFETY_RISK',
+  'INTERVENTION_PROTOCOL',
+  'INTERVENTION_TECHNOLOGY',
+  'PRODUCT_CLAIM',
+  'OTHER',
 ])
-const ClaimStanceEnum = z.enum(['SUPPORTS', 'OPPOSES', 'ASSERTED', 'NEUTRAL', 'MIXED', 'UNKNOWN'])
+const ClaimStanceEnum = z.enum([
+  'SUPPORTS',
+  'OPPOSES',
+  'ASSERTED',
+  'NEUTRAL',
+  'MIXED',
+  'SUGGESTED',
+  'ANECDOTAL',
+  'UNKNOWN',
+])
 const ClaimConfidenceEnum = z.enum(['LOW', 'MEDIUM', 'HIGH', 'VERY_HIGH', 'UNKNOWN'])
 
 export const ClaimCreateInputSchema = z
   .object({
     episodeId: z.string().min(1),
     speakerId: z.string().optional(),
+    probableSpeaker: z.string().optional(),
     text: z.string().min(1),
     evidenceExcerpt: z.string().optional(),
     claimType: ClaimTypeEnum.optional(),
@@ -38,6 +60,7 @@ export const ClaimUpdateInputSchema = z
   .object({
     text: z.string().min(1).optional(),
     evidenceExcerpt: StringNullableOperationSchema.optional(),
+    probableSpeaker: StringNullableOperationSchema.optional(),
     claimType: ClaimTypeEnum.optional(),
     stance: ClaimStanceEnum.optional(),
     claimConfidence: ClaimConfidenceEnum.optional(),
@@ -47,5 +70,6 @@ export const ClaimUpdateInputSchema = z
     tags: StringListOperationSchema.optional(),
     evidenceUrls: StringListOperationSchema.optional(),
     speaker: PersonToOneRelationUpdateInputSchema.optional(),
+    media: MediaToManyRelationUpdateInputSchema.optional(),
   })
 export type ClaimUpdateInput = z.infer<typeof ClaimUpdateInputSchema>

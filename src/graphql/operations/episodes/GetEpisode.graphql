@@ -1,5 +1,5 @@
-query GetEpisode($id: ID, $slug: String) {
-  episode(id: $id, slug: $slug) {
+query GetEpisode($id: ID, $slug: String, $episodePageUrl: String) {
+  episode(id: $id, slug: $slug, episodePageUrl: $episodePageUrl) {
     id
     slug
     podcastId

@@ -2,6 +2,8 @@ import { z } from 'zod'
 import {
   StringNullableOperationSchema,
   IntNullableOperationSchema,
+  buildConnectOrCreateInputSchema,
+  buildToManyRelationUpdateSchema,
   createIdOnlyWhereUniqueInputSchema,
 } from './scalars.js'
 
@@ -34,6 +36,22 @@ export type MediaCreateInput = z.infer<typeof MediaCreateInputSchema>
 
 export const MediaWhereUniqueInputSchema = createIdOnlyWhereUniqueInputSchema()
 export type MediaWhereUniqueInput = z.infer<typeof MediaWhereUniqueInputSchema>
+
+export const MediaConnectOrCreateWhereInputSchema = createIdOnlyWhereUniqueInputSchema()
+export type MediaConnectOrCreateWhereInput = z.infer<typeof MediaConnectOrCreateWhereInputSchema>
+
+export const MediaConnectOrCreateInputSchema = buildConnectOrCreateInputSchema(
+  MediaConnectOrCreateWhereInputSchema,
+  MediaCreateInputSchema,
+)
+export type MediaConnectOrCreateInput = z.infer<typeof MediaConnectOrCreateInputSchema>
+
+export const MediaToManyRelationUpdateInputSchema = buildToManyRelationUpdateSchema(
+  MediaWhereUniqueInputSchema,
+  MediaCreateInputSchema,
+  MediaConnectOrCreateInputSchema,
+)
+export type MediaToManyRelationUpdateInput = z.infer<typeof MediaToManyRelationUpdateInputSchema>
 
 export const MediaUpdateInputSchema = z.object({
   url: z.string().url().optional(),

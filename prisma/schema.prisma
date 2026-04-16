@@ -22,10 +22,15 @@ enum ClaimType {
   FACTUAL
   CAUSAL
   MECHANISTIC
+  MECHANISM_BIOLOGICAL
   STATISTICAL
   ANECDOTAL
   RECOMMENDATION
+  CLINICAL_APPLICATION
   SAFETY_RISK
+  INTERVENTION_PROTOCOL
+  INTERVENTION_TECHNOLOGY
+  PRODUCT_CLAIM
   OTHER
 }
 
@@ -35,6 +40,8 @@ enum ClaimStance {
   ASSERTED
   NEUTRAL
   MIXED
+  SUGGESTED
+  ANECDOTAL
   UNKNOWN
 }
 
@@ -142,7 +149,7 @@ model Episode {
   publishedSummary String?
 
   // URLs
-  episodePageUrl       String?
+  episodePageUrl       String? @unique
   episodeTranscriptUrl String?
 
   // YouTube
@@ -215,6 +222,7 @@ model Claim {
 
   speakerId String?
   speaker   Person? @relation("ClaimSpeaker", fields: [speakerId], references: [id], onDelete: SetNull)
+  probableSpeaker String?
 
   text             String
   evidenceExcerpt  String?

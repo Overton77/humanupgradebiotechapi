@@ -3,6 +3,39 @@ import { getDependentEmbeddingTargets } from '../search/embeddings/dependencyMap
 import { getEmbeddingEntityDelegate } from '../search/embeddings/entityMetadata.js'
 import { syncEmbeddingForEntity } from '../search/embeddings/syncEmbeddingForEntity.js'
 import type {
+  BiomarkerCreateInput,
+  BiomarkerUpdateInput,
+  BiomarkerWhereUniqueInput,
+  CaseStudyCreateInput,
+  CaseStudyUpdateInput,
+  CaseStudyWhereUniqueInput,
+  ClaimCreateInput,
+  ClaimUpdateInput,
+  ClaimWhereUniqueInput,
+  CompoundCreateInput,
+  CompoundUpdateInput,
+  CompoundWhereUniqueInput,
+  EpisodeCreateInput,
+  EpisodeUpdateInput,
+  EpisodeWhereUniqueInput,
+  LabTestCreateInput,
+  LabTestUpdateInput,
+  LabTestWhereUniqueInput,
+  MediaCreateInput,
+  OrganizationCreateInput,
+  OrganizationUpdateInput,
+  OrganizationWhereUniqueInput,
+  PersonCreateInput,
+  PersonUpdateInput,
+  PersonWhereUniqueInput,
+  PodcastCreateInput,
+  PodcastUpdateInput,
+  PodcastWhereUniqueInput,
+  ProductCreateInput,
+  ProductUpdateInput,
+  ProductWhereUniqueInput,
+} from '../validation/index.js'
+import type {
   EmbeddingSelector,
   EmbeddingSourceEntity,
   EmbeddingWriteOptions,
@@ -14,8 +47,82 @@ import {
   applyStringListOp,
   buildToManyRelationMutationPlan,
   buildToOneRelationMutationPlan,
+  resolveEpisodeWhereUnique,
   resolveWhere,
 } from '../graphql/resolvers/helpers.js'
+
+interface IdWhereInput {
+  id?: string | null
+}
+
+interface IdSlugWhereInput extends IdWhereInput {
+  slug?: string | null
+}
+
+interface ToOneRelationUpdateInput<TCreate> {
+  connect?: IdSlugWhereInput
+  disconnect?: boolean
+  create?: TCreate
+  connectOrCreate?: {
+    where: IdSlugWhereInput
+    create: TCreate
+  }
+}
+
+interface ToManyRelationUpdateInput<TCreate> {
+  set?: IdSlugWhereInput[]
+  connect?: IdSlugWhereInput[]
+  disconnect?: IdSlugWhereInput[]
+  create?: TCreate[]
+  connectOrCreate?: Array<{
+    where: IdSlugWhereInput
+    create: TCreate
+  }>
+}
+
+interface MediaNestedCreateData {
+  url: MediaCreateInput['url']
+  type: MediaCreateInput['type']
+  mimeType?: MediaCreateInput['mimeType']
+  title?: MediaCreateInput['title']
+  altText?: MediaCreateInput['altText']
+  caption?: MediaCreateInput['caption']
+  width?: MediaCreateInput['width']
+  height?: MediaCreateInput['height']
+  durationSeconds?: MediaCreateInput['durationSeconds']
+  fileSizeBytes?: MediaCreateInput['fileSizeBytes']
+  sortOrder?: MediaCreateInput['sortOrder']
+}
+
+interface MediaToManyRelationInput {
+  set?: IdWhereInput[]
+  connect?: IdWhereInput[]
+  disconnect?: IdWhereInput[]
+  create?: MediaCreateInput[]
+  connectOrCreate?: Array<{
+    where: IdWhereInput
+    create: MediaCreateInput
+  }>
+}
+
+interface MediaRelationMutationData {
+  set?: Array<{ id: string }>
+  connect?: Array<{ id: string }>
+  disconnect?: Array<{ id: string }>
+  create?: MediaNestedCreateData[]
+}
+
+function asToOneRelationUpdateInput<TCreate>(value: unknown) {
+  return value as ToOneRelationUpdateInput<TCreate> | undefined
+}
+
+function asToManyRelationUpdateInput<TCreate>(value: unknown) {
+  return value as ToManyRelationUpdateInput<TCreate> | undefined
+}
+
+function asMediaToManyRelationUpdateInput(value: unknown) {
+  return value as MediaToManyRelationInput | undefined
+}
 
 function pickDefined(obj: Record<string, unknown>): Record<string, unknown> {
   const result: Record<string, unknown> = {}
@@ -23,6 +130,77 @@ function pickDefined(obj: Record<string, unknown>): Record<string, unknown> {
     if (value !== undefined) result[key] = value
   }
   return result
+}
+
+function sanitizeMediaCreateInput(input: MediaCreateInput): MediaNestedCreateData {
+  return {
+    url: input?.url,
+    type: input?.type,
+    ...(input.mimeType !== undefined ? { mimeType: input.mimeType } : {}),
+    ...(input.title !== undefined ? { title: input.title } : {}),
+    ...(input.altText !== undefined ? { altText: input.altText } : {}),
+    ...(input.caption !== undefined ? { caption: input.caption } : {}),
+    ...(input.width !== undefined ? { width: input.width } : {}),
+    ...(input.height !== undefined ? { height: input.height } : {}),
+    ...(input.durationSeconds !== undefined ? { durationSeconds: input.durationSeconds } : {}),
+    ...(input.fileSizeBytes !== undefined ? { fileSizeBytes: input.fileSizeBytes } : {}),
+    ...(input.sortOrder !== undefined ? { sortOrder: input.sortOrder } : {}),
+  }
+}
+
+async function buildMediaToManyRelationMutationPlan(
+  prisma: GraphQLContext['prisma'],
+  op: MediaToManyRelationInput | undefined,
+) {
+  if (op === undefined) {
+    return {
+      data: undefined as MediaRelationMutationData | undefined,
+      touched: false,
+    }
+  }
+
+  const data: MediaRelationMutationData = {}
+
+  if (op.set) {
+    data.set = op.set.map(where => resolveWhere(where, ['id']))
+  }
+
+  if (op.connect) {
+    data.connect = op.connect.map(where => resolveWhere(where, ['id']))
+  }
+
+  if (op.disconnect) {
+    data.disconnect = op.disconnect.map(where => resolveWhere(where, ['id']))
+  }
+
+  if (op.create) {
+    data.create = op.create.map(create => sanitizeMediaCreateInput(create))
+  }
+
+  if (op.connectOrCreate) {
+    for (const item of op.connectOrCreate) {
+      const existing = await prisma.media.findUnique({
+        where: resolveWhere(item.where, ['id']),
+        select: { id: true },
+      })
+
+      if (existing) {
+        const connect = data.connect ?? []
+        connect.push({ id: existing.id })
+        data.connect = connect
+        continue
+      }
+
+      const create = data.create ?? []
+      create.push(sanitizeMediaCreateInput(item.create))
+      data.create = create
+    }
+  }
+
+  return {
+    data,
+    touched: true,
+  }
 }
 
 async function resolveEntityIdFromSelector(
@@ -132,7 +310,7 @@ async function runPostWriteEmbeddingSync(args: {
 
 export async function createPodcast(args: {
   ctx: GraphQLContext
-  data: any
+  data: PodcastCreateInput
   embedding?: EmbeddingWriteOptions | null
 }) {
   const podcast = await args.ctx.prisma.podcast.create({ data: args.data })
@@ -147,13 +325,17 @@ export async function createPodcast(args: {
 
 export async function updatePodcast(args: {
   ctx: GraphQLContext
-  where: any
-  data: any
+  where: PodcastWhereUniqueInput
+  data: PodcastUpdateInput
   embedding?: EmbeddingWriteOptions | null
 }) {
   const existing = await args.ctx.prisma.podcast.findUniqueOrThrow({
     where: resolveWhere(args.where),
   })
+  const mediaPlan = await buildMediaToManyRelationMutationPlan(
+    args.ctx.prisma,
+    asMediaToManyRelationUpdateInput(args.data.media),
+  )
 
   const podcast = await args.ctx.prisma.podcast.update({
     where: { id: existing.id },
@@ -169,6 +351,7 @@ export async function updatePodcast(args: {
       tags: args.data.tags
         ? { set: applyStringListOp(existing.tags, args.data.tags)! }
         : undefined,
+      media: mediaPlan.data,
     }),
   })
 
@@ -183,7 +366,7 @@ export async function updatePodcast(args: {
 
 export async function createEpisode(args: {
   ctx: GraphQLContext
-  data: any
+  data: EpisodeCreateInput
   embedding?: EmbeddingWriteOptions | null
 }) {
   const episode = await args.ctx.prisma.episode.create({ data: args.data })
@@ -198,24 +381,32 @@ export async function createEpisode(args: {
 
 export async function updateEpisode(args: {
   ctx: GraphQLContext
-  where: any
-  data: any
+  where: EpisodeWhereUniqueInput
+  data: EpisodeUpdateInput
   embedding?: EmbeddingWriteOptions | null
 }) {
   const mode = resolveEmbeddingWriteMode(args.embedding)
   const existing = await args.ctx.prisma.episode.findUniqueOrThrow({
-    where: resolveWhere(args.where),
+    where: resolveEpisodeWhereUnique(args.where),
   })
-  const guestsPlan = await buildToManyRelationMutationPlan(args.data.guests, {
+  const guestsPlan = await buildToManyRelationMutationPlan(
+    asToManyRelationUpdateInput<PersonCreateInput>(args.data.guests),
+    {
     prisma: args.ctx.prisma,
     searchableEntity: 'person',
     mode,
   })
-  const sponsorsPlan = await buildToManyRelationMutationPlan(args.data.sponsorOrganizations, {
+  const sponsorsPlan = await buildToManyRelationMutationPlan(
+    asToManyRelationUpdateInput<OrganizationCreateInput>(args.data.sponsorOrganizations),
+    {
     prisma: args.ctx.prisma,
     searchableEntity: 'organization',
     mode,
   })
+  const mediaPlan = await buildMediaToManyRelationMutationPlan(
+    args.ctx.prisma,
+    asMediaToManyRelationUpdateInput(args.data.media),
+  )
 
   const episode = await args.ctx.prisma.episode.update({
     where: { id: existing.id },
@@ -266,6 +457,7 @@ export async function updateEpisode(args: {
       webPageTimelines: args.data.webPageTimelines,
       guests: guestsPlan.data,
       sponsorOrganizations: sponsorsPlan.data,
+      media: mediaPlan.data,
     }),
   })
 
@@ -284,7 +476,7 @@ export async function updateEpisode(args: {
 
 export async function createClaim(args: {
   ctx: GraphQLContext
-  data: any
+  data: ClaimCreateInput
   embedding?: EmbeddingWriteOptions | null
 }) {
   const claim = await args.ctx.prisma.claim.create({ data: args.data })
@@ -299,19 +491,25 @@ export async function createClaim(args: {
 
 export async function updateClaim(args: {
   ctx: GraphQLContext
-  where: any
-  data: any
+  where: ClaimWhereUniqueInput
+  data: ClaimUpdateInput
   embedding?: EmbeddingWriteOptions | null
 }) {
   const mode = resolveEmbeddingWriteMode(args.embedding)
   const existing = await args.ctx.prisma.claim.findUniqueOrThrow({
     where: resolveWhere(args.where, ['id']),
   })
-  const speakerPlan = await buildToOneRelationMutationPlan(args.data.speaker, {
+  const speakerPlan = await buildToOneRelationMutationPlan(
+    asToOneRelationUpdateInput<PersonCreateInput>(args.data.speaker),
+    {
     prisma: args.ctx.prisma,
     searchableEntity: 'person',
     mode,
   })
+  const mediaPlan = await buildMediaToManyRelationMutationPlan(
+    args.ctx.prisma,
+    asMediaToManyRelationUpdateInput(args.data.media),
+  )
 
   const claim = await args.ctx.prisma.claim.update({
     where: { id: existing.id },
@@ -329,6 +527,7 @@ export async function updateClaim(args: {
         ? { set: applyStringListOp(existing.evidenceUrls, args.data.evidenceUrls)! }
         : undefined,
       speaker: speakerPlan.data,
+      media: mediaPlan.data,
     }),
   })
 
@@ -344,7 +543,7 @@ export async function updateClaim(args: {
 
 export async function createPerson(args: {
   ctx: GraphQLContext
-  data: any
+  data: PersonCreateInput
   embedding?: EmbeddingWriteOptions | null
 }) {
   const person = await args.ctx.prisma.person.create({ data: args.data })
@@ -359,13 +558,17 @@ export async function createPerson(args: {
 
 export async function updatePerson(args: {
   ctx: GraphQLContext
-  where: any
-  data: any
+  where: PersonWhereUniqueInput
+  data: PersonUpdateInput
   embedding?: EmbeddingWriteOptions | null
 }) {
   const existing = await args.ctx.prisma.person.findUniqueOrThrow({
     where: resolveWhere(args.where),
   })
+  const mediaPlan = await buildMediaToManyRelationMutationPlan(
+    args.ctx.prisma,
+    asMediaToManyRelationUpdateInput(args.data.media),
+  )
 
   const person = await args.ctx.prisma.person.update({
     where: { id: existing.id },
@@ -384,6 +587,7 @@ export async function updatePerson(args: {
       expertiseAreas: args.data.expertiseAreas
         ? { set: applyStringListOp(existing.expertiseAreas, args.data.expertiseAreas)! }
         : undefined,
+      media: mediaPlan.data,
     }),
   })
 
@@ -398,7 +602,7 @@ export async function updatePerson(args: {
 
 export async function createOrganization(args: {
   ctx: GraphQLContext
-  data: any
+  data: OrganizationCreateInput
   embedding?: EmbeddingWriteOptions | null
 }) {
   const organization = await args.ctx.prisma.organization.create({ data: args.data })
@@ -413,24 +617,32 @@ export async function createOrganization(args: {
 
 export async function updateOrganization(args: {
   ctx: GraphQLContext
-  where: any
-  data: any
+  where: OrganizationWhereUniqueInput
+  data: OrganizationUpdateInput
   embedding?: EmbeddingWriteOptions | null
 }) {
   const mode = resolveEmbeddingWriteMode(args.embedding)
   const existing = await args.ctx.prisma.organization.findUniqueOrThrow({
     where: resolveWhere(args.where),
   })
-  const ownersPlan = await buildToManyRelationMutationPlan(args.data.owners, {
+  const ownersPlan = await buildToManyRelationMutationPlan(
+    asToManyRelationUpdateInput<PersonCreateInput>(args.data.owners),
+    {
     prisma: args.ctx.prisma,
     searchableEntity: 'person',
     mode,
   })
-  const executivesPlan = await buildToManyRelationMutationPlan(args.data.executives, {
+  const executivesPlan = await buildToManyRelationMutationPlan(
+    asToManyRelationUpdateInput<PersonCreateInput>(args.data.executives),
+    {
     prisma: args.ctx.prisma,
     searchableEntity: 'person',
     mode,
   })
+  const mediaPlan = await buildMediaToManyRelationMutationPlan(
+    args.ctx.prisma,
+    asMediaToManyRelationUpdateInput(args.data.media),
+  )
 
   const organization = await args.ctx.prisma.organization.update({
     where: { id: existing.id },
@@ -454,6 +666,7 @@ export async function updateOrganization(args: {
         : undefined,
       owners: ownersPlan.data,
       executives: executivesPlan.data,
+      media: mediaPlan.data,
     }),
   })
 
@@ -472,7 +685,7 @@ export async function updateOrganization(args: {
 
 export async function createProduct(args: {
   ctx: GraphQLContext
-  data: any
+  data: ProductCreateInput
   embedding?: EmbeddingWriteOptions | null
 }) {
   const product = await args.ctx.prisma.product.create({ data: args.data })
@@ -487,24 +700,32 @@ export async function createProduct(args: {
 
 export async function updateProduct(args: {
   ctx: GraphQLContext
-  where: any
-  data: any
+  where: ProductWhereUniqueInput
+  data: ProductUpdateInput
   embedding?: EmbeddingWriteOptions | null
 }) {
   const mode = resolveEmbeddingWriteMode(args.embedding)
   const existing = await args.ctx.prisma.product.findUniqueOrThrow({
     where: resolveWhere(args.where),
   })
-  const organizationPlan = await buildToOneRelationMutationPlan(args.data.organization, {
+  const organizationPlan = await buildToOneRelationMutationPlan(
+    asToOneRelationUpdateInput<OrganizationCreateInput>(args.data.organization),
+    {
     prisma: args.ctx.prisma,
     searchableEntity: 'organization',
     mode,
   })
-  const compoundsPlan = await buildToManyRelationMutationPlan(args.data.containsCompounds, {
+  const compoundsPlan = await buildToManyRelationMutationPlan(
+    asToManyRelationUpdateInput<CompoundCreateInput>(args.data.containsCompounds),
+    {
     prisma: args.ctx.prisma,
     searchableEntity: 'compound',
     mode,
   })
+  const mediaPlan = await buildMediaToManyRelationMutationPlan(
+    args.ctx.prisma,
+    asMediaToManyRelationUpdateInput(args.data.media),
+  )
 
   const product = await args.ctx.prisma.product.update({
     where: { id: existing.id },
@@ -528,6 +749,7 @@ export async function updateProduct(args: {
         : undefined,
       organization: organizationPlan.data,
       containsCompounds: compoundsPlan.data,
+      media: mediaPlan.data,
     }),
   })
 
@@ -546,7 +768,7 @@ export async function updateProduct(args: {
 
 export async function createCompound(args: {
   ctx: GraphQLContext
-  data: any
+  data: CompoundCreateInput
   embedding?: EmbeddingWriteOptions | null
 }) {
   const compound = await args.ctx.prisma.compound.create({ data: args.data })
@@ -561,13 +783,17 @@ export async function createCompound(args: {
 
 export async function updateCompound(args: {
   ctx: GraphQLContext
-  where: any
-  data: any
+  where: CompoundWhereUniqueInput
+  data: CompoundUpdateInput
   embedding?: EmbeddingWriteOptions | null
 }) {
   const existing = await args.ctx.prisma.compound.findUniqueOrThrow({
     where: resolveWhere(args.where),
   })
+  const mediaPlan = await buildMediaToManyRelationMutationPlan(
+    args.ctx.prisma,
+    asMediaToManyRelationUpdateInput(args.data.media),
+  )
 
   const compound = await args.ctx.prisma.compound.update({
     where: { id: existing.id },
@@ -582,6 +808,7 @@ export async function updateCompound(args: {
       mechanisms: args.data.mechanisms
         ? { set: applyStringListOp(existing.mechanisms, args.data.mechanisms)! }
         : undefined,
+      media: mediaPlan.data,
     }),
   })
 
@@ -596,7 +823,7 @@ export async function updateCompound(args: {
 
 export async function createLabTest(args: {
   ctx: GraphQLContext
-  data: any
+  data: LabTestCreateInput
   embedding?: EmbeddingWriteOptions | null
 }) {
   const labTest = await args.ctx.prisma.labTest.create({ data: args.data })
@@ -611,29 +838,39 @@ export async function createLabTest(args: {
 
 export async function updateLabTest(args: {
   ctx: GraphQLContext
-  where: any
-  data: any
+  where: LabTestWhereUniqueInput
+  data: LabTestUpdateInput
   embedding?: EmbeddingWriteOptions | null
 }) {
   const mode = resolveEmbeddingWriteMode(args.embedding)
   const existing = await args.ctx.prisma.labTest.findUniqueOrThrow({
     where: resolveWhere(args.where),
   })
-  const productPlan = await buildToOneRelationMutationPlan(args.data.product, {
+  const productPlan = await buildToOneRelationMutationPlan(
+    asToOneRelationUpdateInput<ProductCreateInput>(args.data.product),
+    {
     prisma: args.ctx.prisma,
     searchableEntity: 'product',
     mode,
   })
-  const organizationPlan = await buildToOneRelationMutationPlan(args.data.organization, {
+  const organizationPlan = await buildToOneRelationMutationPlan(
+    asToOneRelationUpdateInput<OrganizationCreateInput>(args.data.organization),
+    {
     prisma: args.ctx.prisma,
     searchableEntity: 'organization',
     mode,
   })
-  const biomarkersPlan = await buildToManyRelationMutationPlan(args.data.testsBiomarkers, {
+  const biomarkersPlan = await buildToManyRelationMutationPlan(
+    asToManyRelationUpdateInput<BiomarkerCreateInput>(args.data.testsBiomarkers),
+    {
     prisma: args.ctx.prisma,
     searchableEntity: 'biomarker',
     mode,
   })
+  const mediaPlan = await buildMediaToManyRelationMutationPlan(
+    args.ctx.prisma,
+    asMediaToManyRelationUpdateInput(args.data.media),
+  )
 
   const labTest = await args.ctx.prisma.labTest.update({
     where: { id: existing.id },
@@ -648,6 +885,7 @@ export async function updateLabTest(args: {
       product: productPlan.data,
       organization: organizationPlan.data,
       testsBiomarkers: biomarkersPlan.data,
+      media: mediaPlan.data,
     }),
   })
 
@@ -676,7 +914,7 @@ export async function updateLabTest(args: {
 
 export async function createBiomarker(args: {
   ctx: GraphQLContext
-  data: any
+  data: BiomarkerCreateInput
   embedding?: EmbeddingWriteOptions | null
 }) {
   const biomarker = await args.ctx.prisma.biomarker.create({ data: args.data })
@@ -691,13 +929,17 @@ export async function createBiomarker(args: {
 
 export async function updateBiomarker(args: {
   ctx: GraphQLContext
-  where: any
-  data: any
+  where: BiomarkerWhereUniqueInput
+  data: BiomarkerUpdateInput
   embedding?: EmbeddingWriteOptions | null
 }) {
   const existing = await args.ctx.prisma.biomarker.findUniqueOrThrow({
     where: resolveWhere(args.where),
   })
+  const mediaPlan = await buildMediaToManyRelationMutationPlan(
+    args.ctx.prisma,
+    asMediaToManyRelationUpdateInput(args.data.media),
+  )
 
   const biomarker = await args.ctx.prisma.biomarker.update({
     where: { id: existing.id },
@@ -717,6 +959,7 @@ export async function updateBiomarker(args: {
       relatedSystems: args.data.relatedSystems
         ? { set: applyStringListOp(existing.relatedSystems, args.data.relatedSystems)! }
         : undefined,
+      media: mediaPlan.data,
     }),
   })
 
@@ -731,7 +974,7 @@ export async function updateBiomarker(args: {
 
 export async function createCaseStudy(args: {
   ctx: GraphQLContext
-  data: any
+  data: CaseStudyCreateInput
   embedding?: EmbeddingWriteOptions | null
 }) {
   const caseStudy = await args.ctx.prisma.caseStudy.create({ data: args.data })
@@ -746,24 +989,32 @@ export async function createCaseStudy(args: {
 
 export async function updateCaseStudy(args: {
   ctx: GraphQLContext
-  where: any
-  data: any
+  where: CaseStudyWhereUniqueInput
+  data: CaseStudyUpdateInput
   embedding?: EmbeddingWriteOptions | null
 }) {
   const mode = resolveEmbeddingWriteMode(args.embedding)
   const existing = await args.ctx.prisma.caseStudy.findUniqueOrThrow({
     where: resolveWhere(args.where),
   })
-  const sponsorsPlan = await buildToManyRelationMutationPlan(args.data.businessSponsors, {
+  const sponsorsPlan = await buildToManyRelationMutationPlan(
+    asToManyRelationUpdateInput<OrganizationCreateInput>(args.data.businessSponsors),
+    {
     prisma: args.ctx.prisma,
     searchableEntity: 'organization',
     mode,
   })
-  const referencedPlan = await buildToManyRelationMutationPlan(args.data.referencedByOrganizations, {
+  const referencedPlan = await buildToManyRelationMutationPlan(
+    asToManyRelationUpdateInput<OrganizationCreateInput>(args.data.referencedByOrganizations),
+    {
     prisma: args.ctx.prisma,
     searchableEntity: 'organization',
     mode,
   })
+  const mediaPlan = await buildMediaToManyRelationMutationPlan(
+    args.ctx.prisma,
+    asMediaToManyRelationUpdateInput(args.data.media),
+  )
 
   const caseStudy = await args.ctx.prisma.caseStudy.update({
     where: { id: existing.id },
@@ -783,6 +1034,7 @@ export async function updateCaseStudy(args: {
         : undefined,
       businessSponsors: sponsorsPlan.data,
       referencedByOrganizations: referencedPlan.data,
+      media: mediaPlan.data,
     }),
   })
 

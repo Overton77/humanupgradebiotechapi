@@ -10,6 +10,7 @@ import {
 } from './scalars.js'
 import { OrganizationToOneRelationUpdateInputSchema } from './organization.js'
 import { CompoundToManyRelationUpdateInputSchema } from './compound.js'
+import { MediaToManyRelationUpdateInputSchema } from './media.js'
 
 export const ProductCreateInputSchema = z
   .object({
@@ -67,5 +68,6 @@ export const ProductUpdateInputSchema = z
     benefits: StringListOperationSchema.optional(),
     organization: OrganizationToOneRelationUpdateInputSchema.optional(),
     containsCompounds: CompoundToManyRelationUpdateInputSchema.optional(),
+    media: MediaToManyRelationUpdateInputSchema.optional(),
   })
 export type ProductUpdateInput = z.infer<typeof ProductUpdateInputSchema>

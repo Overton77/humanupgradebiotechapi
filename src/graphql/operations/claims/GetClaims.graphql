@@ -9,6 +9,7 @@ query GetClaims($input: ClaimSearchInput) {
         id
         episodeId
         speakerId
+        probableSpeaker
         text
         claimType
         stance

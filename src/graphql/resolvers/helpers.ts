@@ -47,16 +47,44 @@ export function applyStringListOp(
  * Resolves a unique selector object to a Prisma where clause.
  */
 export function resolveWhere(
-  where: { id?: string | null; slug?: string | null },
-  selectors: Array<'id' | 'slug'> = ['id', 'slug'],
+  where: { id?: string | null; slug?: string | null; episodePageUrl?: string | null },
+  selectors: Array<'id' | 'slug' | 'episodePageUrl'> = ['id', 'slug'],
 ): any {
   for (const selector of selectors) {
     const value = where[selector]
     if (!value) continue
     if (selector === 'id') return { id: value }
     if (selector === 'slug') return { slug: value }
+    if (selector === 'episodePageUrl') return { episodePageUrl: value }
   }
   throw new Error(`Provide exactly one of: ${selectors.join(', ')}`)
+}
+
+const EPISODE_UNIQUE_SELECTORS = ['id', 'slug', 'episodePageUrl'] as const
+
+/**
+ * Resolves Episode unique lookup: exactly one of id, slug, episodePageUrl (non-empty).
+ */
+export function resolveEpisodeWhereUnique(where: {
+  id?: string | null
+  slug?: string | null
+  episodePageUrl?: string | null
+}): { id: string } | { slug: string } | { episodePageUrl: string } {
+  const provided = EPISODE_UNIQUE_SELECTORS.filter(name => {
+    const v = where[name]
+    return v != null && String(v).length > 0
+  })
+  if (provided.length === 0) {
+    throw new Error('Provide exactly one of: id, slug, episodePageUrl')
+  }
+  if (provided.length > 1) {
+    throw new Error('Only one selector is allowed: id, slug, episodePageUrl')
+  }
+  const name = provided[0]
+  const value = where[name] as string
+  if (name === 'id') return { id: value }
+  if (name === 'slug') return { slug: value }
+  return { episodePageUrl: value }
 }
 
 /**

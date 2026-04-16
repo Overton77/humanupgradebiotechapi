@@ -11,6 +11,7 @@ import {
   buildToManyRelationUpdateSchema,
 } from './scalars.js'
 import { PersonToManyRelationUpdateInputSchema } from './person.js'
+import { MediaToManyRelationUpdateInputSchema } from './media.js'
 
 const OrganizationTypeEnum = z.enum([
   'BRAND', 'MANUFACTURER', 'RETAILER', 'LAB', 'CLINIC',
@@ -80,5 +81,6 @@ export const OrganizationUpdateInputSchema = z
     domains: StringListOperationSchema.optional(),
     owners: PersonToManyRelationUpdateInputSchema.optional(),
     executives: PersonToManyRelationUpdateInputSchema.optional(),
+    media: MediaToManyRelationUpdateInputSchema.optional(),
   })
 export type OrganizationUpdateInput = z.infer<typeof OrganizationUpdateInputSchema>
